@@ -37,6 +37,7 @@ kotlin {
         nativeMain.dependencies {
             implementation(libs.kotlinxSerializationJson)
             implementation(libs.kotlinxCoroutines)
+            implementation(libs.kotlinxDateTime)
         }
     }
 }

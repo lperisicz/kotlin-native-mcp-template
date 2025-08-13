@@ -1,11 +1,13 @@
 [versions]
-kotlin = "2.1.0"
+kotlin = "2.1.20"
 kotlinxSerialization = "1.8.0"
 kotlinxCoroutines = "1.10.2"
+kotlinxDateTime = "0.7.1"
 
 [libraries]
 kotlinxSerializationJson = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
 kotlinxCoroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinxCoroutines" }
+kotlinxDateTime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDateTime" }
 
 [plugins]
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
