@@ -28,7 +28,7 @@ kotlin {
     nativeTarget.apply {
         binaries {
             executable {
-                entryPoint = "main"
+                entryPoint = "cmd.main"
             }
         }
     }
@@ -38,6 +38,7 @@ kotlin {
             implementation(libs.kotlinxSerializationJson)
             implementation(libs.kotlinxCoroutines)
             implementation(libs.kotlinxDateTime)
+            implementation(libs.kotlinxCli)
         }
     }
 }

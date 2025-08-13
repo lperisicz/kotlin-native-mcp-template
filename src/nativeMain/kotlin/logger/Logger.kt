@@ -34,6 +34,10 @@ internal object Logger {
             writeToFile(formattedMessage)
         }
 
+        if (logToStdout) {
+            println(formattedMessage)
+        }
+
         // write to stderr to keep stdout clean
         if (level == LogLevel.ERROR || level == LogLevel.WARN) {
             fprintf(stderr, "%s\n", formattedMessage)
@@ -62,15 +66,27 @@ internal object Logger {
         this.logToStdout = logToStdout
     }
 
-    fun setLogFile(logFile: String) {
+    fun setLogFile(logFile: String?) {
         // close already opened file
         if (this.logFile != null) {
             fclose(this.logFile)
         }
 
+        if (logFile == null) {
+            this.logFile = null
+            return
+        }
+
         this.logFile = fopen(logFile, "a")
         if (this.logFile == null) {
             perror("Failed to open log file")
+        }
+    }
+
+    fun close() {
+        if (this.logFile != null) {
+            fclose(this.logFile)
+            this.logFile = null
         }
     }
 
