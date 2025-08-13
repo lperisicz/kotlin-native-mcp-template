@@ -70,7 +70,7 @@ private fun parseArgs(args: Array<String>): Config {
     ) {
 
         val port by option(
-            ArgType.Int,
+            type = ArgType.Int,
             fullName = "port",
             description = "Port to listen on for SSE (default: ${config.ssePort})"
         )
