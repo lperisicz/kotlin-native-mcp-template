@@ -7,10 +7,13 @@ import kotlinx.cli.ExperimentalCli
 import kotlinx.cli.Subcommand
 import logger.LogLevel
 import logger.Logger
+import logger.info
 import platform.posix.fflush
 import platform.posix.fprintf
 import platform.posix.stderr
 import server.ServerConfig
+
+private const val TAG = "Main"
 
 public fun main(args: Array<String>) {
     val config = parseArgs(args)
@@ -18,6 +21,7 @@ public fun main(args: Array<String>) {
     Logger.applyConfig(config)
 
     try {
+        Logger.info(TAG, "Starting server with config $config")
         // TODO setup MCP server (transport{stdio, sse(port)})
     } finally {
         Logger.close()
@@ -72,6 +76,7 @@ private fun parseArgs(args: Array<String>): Config {
         val port by option(
             type = ArgType.Int,
             fullName = "port",
+            shortName = "p",
             description = "Port to listen on for SSE (default: ${config.ssePort})"
         )
 
