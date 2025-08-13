@@ -93,6 +93,7 @@ internal object Logger {
     private fun writeToFile(message: String) =
         this.logFile?.let { file ->
             fprintf(file, "%s\n", message)
+            fflush(file)
         }
 }
 

@@ -1,31 +1,45 @@
 package cmd
 
 import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.cinterop.staticCFunction
 import kotlinx.cli.ArgParser
 import kotlinx.cli.ArgType
 import kotlinx.cli.ExperimentalCli
 import kotlinx.cli.Subcommand
+import kotlinx.coroutines.runBlocking
 import logger.LogLevel
 import logger.Logger
 import logger.info
+import platform.posix.SIGINT
+import platform.posix.exit
 import platform.posix.fflush
 import platform.posix.fprintf
+import platform.posix.signal
 import platform.posix.stderr
+import server.MCPServer
 import server.ServerConfig
 
 private const val TAG = "Main"
 
 public fun main(args: Array<String>) {
+    handleExit()
+
     val config = parseArgs(args)
 
     Logger.applyConfig(config)
 
-    try {
-        Logger.info(TAG, "Starting server with config $config")
-        // TODO setup MCP server (transport{stdio, sse(port)})
-    } finally {
-        Logger.close()
+    Logger.info(TAG, "Starting server with config $config")
+
+    val server = MCPServer(
+        transportConfig = config.serverTransport!!,
+        port = config.ssePort
+    )
+
+    runBlocking {
+        server.start()
     }
+
+    Logger.info(TAG, "Server stopped")
 }
 
 private data class Config(
@@ -35,6 +49,18 @@ private data class Config(
     val serverTransport: ServerConfig.Transport? = null,
     val ssePort: Int = ServerConfig.DEFAULT_SSE_PORT,
 )
+
+@OptIn(ExperimentalForeignApi::class)
+private fun handleExit() {
+
+    fun handleSignal(@Suppress("UNUSED_PARAMETER") signalNumber: Int) {
+        Logger.info(TAG, "Caught SIGINT, shutting down...")
+        Logger.close()
+        exit(0)
+    }
+
+    signal(SIGINT, staticCFunction(::handleSignal))
+}
 
 @OptIn(ExperimentalCli::class, ExperimentalForeignApi::class)
 private fun parseArgs(args: Array<String>): Config {
@@ -95,7 +121,7 @@ private fun parseArgs(args: Array<String>): Config {
         fprintf(stderr, "%s\n", "Error: No transport selected. See --help for usage.")
         fflush(stderr)
         // exit with non-zero code to indicate failure
-        kotlin.system.exitProcess(1)
+        exit(1)
     }
 
     return config.copy(
