@@ -1,22 +1,54 @@
-[![official JetBrains project](https://jb.gg/badges/official-plastic.svg)](https://confluence.jetbrains.com/display/ALL/JetBrains+on+GitHub)
-[![Kotlin](https://img.shields.io/badge/Kotlin-2.0-blue.svg?style=flat&logo=kotlin)](https://kotlinlang.org)
+# Kotlin/Native MCP Server
 
-# Kotlin/Native Template
+A Model Context Protocol (MCP) server implementation written in Kotlin/Native that compiles to a native executable.
 
-A mostly-empty template to get started creating a Kotlin/Native project. 
+## Building
 
-## Getting Started
+```bash
+./gradlew build
+```
 
-1. On the project page, click on the `Use this template` button
-2. Click on the `Create a new repository` drop-down item
-3. Fill in the details of the new repository you'll be creating under your account
-4. Click the `Create repository` button
-5. Browse to your repository and make the needed changes there.
+The executable will be created at `build/bin/native/releaseExecutable/KotlinNativeMCPTemplate.kexe`
 
-## Code of conduct
+## Usage
 
-Please read [our code of conduct](https://github.com/jetbrains#code-of-conduct).
+The server supports two transport modes: stdio and SSE (Server-Sent Events).
 
-## License
+### Stdio Transport
 
-The [kmp-native-wizard template](https://github.com/Kotlin/kmp-native-wizard/) is licensed under [CC0](https://creativecommons.org/publicdomain/zero/1.0/deed.en).
+```bash
+./KotlinNativeMCPTemplate.kexe stdio --log-file mcp-server.log --log-level DEBUG
+```
+
+### SSE Transport  
+
+```bash
+./KotlinNativeMCPTemplate.kexe sse --port 8080 --log-file mcp-server.log --log-level DEBUG
+```
+### Options
+
+- `--log-level`: Set log verbosity (DEBUG, INFO, WARN, ERROR)
+- `--log-file`: Path to log file
+- `--log-stdout`: Enable console logging
+- `--port, -p`: SSE server port (default: 8080)
+
+### Help
+
+```bash
+./KotlinNativeMCPTemplate.kexe --help
+./KotlinNativeMCPTemplate.kexe sse --help
+```
+
+## Features
+
+- **Native executable**: Single binary with no runtime dependencies
+- **MCP Protocol**: Implements Model Context Protocol for tool integration
+- **Multiple transports**: Stdio and SSE support (StreamableHttp TBD)
+- **Example tool**: Includes a joke generator tool for testing
+
+## Project Structure
+
+- `src/nativeMain/kotlin/cmd/` - CLI argument parsing and main entry point
+- `src/nativeMain/kotlin/server/` - MCP server implementation
+- `src/nativeMain/kotlin/server/tool/` - Tool definitions
+- `src/nativeMain/kotlin/logger/` - Logging utilities
