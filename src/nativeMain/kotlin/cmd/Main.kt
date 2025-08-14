@@ -18,6 +18,7 @@ import platform.posix.signal
 import platform.posix.stderr
 import server.MCPServer
 import server.ServerConfig
+import server.tool.ExampleTool
 
 private const val TAG = "Main"
 
@@ -32,7 +33,10 @@ public fun main(args: Array<String>) {
 
     val server = MCPServer(
         transportConfig = config.serverTransport!!,
-        port = config.ssePort
+        port = config.ssePort,
+        tools = listOf(
+            ExampleTool,
+        )
     )
 
     runBlocking {

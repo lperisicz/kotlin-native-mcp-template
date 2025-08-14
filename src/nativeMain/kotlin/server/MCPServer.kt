@@ -15,6 +15,10 @@ import server.models.InitializeResult
 import server.models.JsonRpcRequest
 import server.models.JsonRpcResponse
 import server.models.ServerInfo
+import server.models.ToolCallParams
+import server.models.ToolsListResult
+import server.tool.Tool
+import server.tool.toToolItem
 import server.transport.MCPServerTransport
 import server.transport.Request
 import server.transport.SseTransport
@@ -22,7 +26,8 @@ import server.transport.StdioTransport
 
 internal class MCPServer(
     private val transportConfig: ServerConfig.Transport,
-    port: Int,
+    private val tools: List<Tool> = emptyList(),
+    port: Int = ServerConfig.DEFAULT_SSE_PORT,
 ) {
 
     companion object {
@@ -88,7 +93,7 @@ internal class MCPServer(
             null
         }
 
-    private fun handleRequest(request: JsonRpcRequest): JsonRpcResponse? =
+    private suspend fun handleRequest(request: JsonRpcRequest): JsonRpcResponse? =
         try {
             when (request.method) {
                 "initialize" -> {
@@ -98,14 +103,24 @@ internal class MCPServer(
 
                 "notifications/initialized" -> {
                     Logger.info(
-                        "MCPServer",
-                        "Received initialized notification - server is now ready"
+                        TAG,
+                        "Received initialized notification"
                     )
                     // TODO handle initialized status, maybe block some actions for sessionId
                     // until initialized
                     // either save sessionId to initialized status on a server or in the transport?
                     // initialized = true
                     null
+                }
+
+                "tools/list" -> {
+                    Logger.info(TAG, "Handling tools list request")
+                    handleToolList(request)
+                }
+
+                "tools/call" -> {
+                    Logger.info(TAG, "Handling tools call")
+                    handleToolCall(request)
                 }
 
                 else -> {
@@ -146,9 +161,49 @@ internal class MCPServer(
         )
 
         Logger.info(
-            "MCPServer",
+            TAG,
             "Server initialized successfully with protocol version ${result.protocolVersion}"
         )
+
+        return JsonRpcResponse(
+            jsonrpc = "2.0",
+            id = request.id,
+            result = json.encodeToJsonElement(result)
+        )
+    }
+
+    private fun handleToolList(request: JsonRpcRequest): JsonRpcResponse {
+        Logger.debug(TAG, "Listing available tools")
+
+        val result = ToolsListResult(
+            tools = tools.map(Tool::toToolItem)
+        )
+
+        Logger.debug(TAG, "Available tools: ${result.tools.joinToString { it.name }}")
+
+        return JsonRpcResponse(
+            jsonrpc = "2.0",
+            id = request.id,
+            result = json.encodeToJsonElement(result)
+        )
+    }
+
+    private suspend fun handleToolCall(request: JsonRpcRequest): JsonRpcResponse {
+        val params = request.params?.let {
+            json.decodeFromJsonElement<ToolCallParams>(it)
+        } ?: return createErrorResponse(request.id, -32602, "Invalid params")
+
+        Logger.debug(TAG, "Calling tool: ${params.name}")
+
+        val targetTool = tools.firstOrNull { it.toolDefinition.name == params.name }
+
+        if (targetTool == null) {
+            return createErrorResponse(request.id, -32602, "Invalid params")
+        }
+
+        val result = targetTool.invoke(params)
+
+        Logger.debug(TAG, "Returning tool result: $result")
 
         return JsonRpcResponse(
             jsonrpc = "2.0",

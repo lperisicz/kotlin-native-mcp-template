@@ -5,11 +5,11 @@ import kotlinx.serialization.json.JsonObject
 
 @Serializable
 internal data class ToolsListResult(
-    val tools: List<Tool>,
+    val tools: List<ToolItem>,
 )
 
 @Serializable
-internal data class Tool(
+internal data class ToolItem(
     val name: String,
     val description: String,
     val inputSchema: JsonObject,
