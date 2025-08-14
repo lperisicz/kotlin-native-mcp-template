@@ -4,12 +4,16 @@ kotlinxSerialization = "1.8.0"
 kotlinxCoroutines = "1.10.2"
 kotlinxDateTime = "0.7.1"
 kotlinxCli = "0.3.6"
+ktorServer = "3.2.3"
 
 [libraries]
 kotlinxSerializationJson = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
 kotlinxCoroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinxCoroutines" }
 kotlinxDateTime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDateTime" }
 kotlinxCli = { module = "org.jetbrains.kotlinx:kotlinx-cli", version.ref = "kotlinxCli" }
+ktorServerCore = { module = "io.ktor:ktor-server-cio", version.ref = "ktorServer" }
+ktorServerCio = { module = "io.ktor:ktor-server-cio", version.ref = "ktorServer" }
+ktorServerSse = { module = "io.ktor:ktor-server-sse", version.ref = "ktorServer" }
 
 [plugins]
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }

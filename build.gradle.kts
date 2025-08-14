@@ -39,6 +39,9 @@ kotlin {
             implementation(libs.kotlinxCoroutines)
             implementation(libs.kotlinxDateTime)
             implementation(libs.kotlinxCli)
+            implementation(libs.ktorServerCore)
+            implementation(libs.ktorServerCio)
+            implementation(libs.ktorServerSse)
         }
     }
 }
