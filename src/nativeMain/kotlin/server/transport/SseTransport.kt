@@ -1,68 +1,32 @@
-package server
+package server.transport
 
+import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.install
 import io.ktor.server.cio.CIO
 import io.ktor.server.engine.embeddedServer
-import io.ktor.server.request.ApplicationRequest
 import io.ktor.server.request.receiveText
 import io.ktor.server.request.uri
+import io.ktor.server.response.respond
 import io.ktor.server.routing.post
 import io.ktor.server.routing.routing
 import io.ktor.server.sse.SSE
 import io.ktor.server.sse.sse
 import io.ktor.sse.ServerSentEvent
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.isActive
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import logger.Logger
 import logger.debug
-import logger.error
-
-internal typealias Request = String
-internal typealias Response = String
-
-internal typealias RequestChannel = Channel<Request>
-
-private fun Channel.Factory.newRequestChannel(): RequestChannel = Channel(capacity = CONFLATED)
-
-internal interface MCPServerTransport {
-
-    // TODO inspect the possibility of where to perform parallel executions
-    suspend fun listen(handler: suspend (Request) -> Response)
-}
-
-internal class StdioTransport : MCPServerTransport {
-
-    companion object {
-        private const val TAG = "StdioTransport"
-    }
-
-    override suspend fun listen(handler: suspend (Request) -> Response) =
-        coroutineScope {
-            while (coroutineContext.isActive) {
-                try {
-                    val request = readlnOrNull() ?: break
-
-                    Logger.debug(TAG, "Received request: $request")
-
-                    if (request.isBlank()) continue
-
-                    val response = handler(request)
-
-                    println(response)
-                } catch (e: Exception) {
-                    Logger.error(TAG, "Error processing request line: ${e.message}", e)
-                }
-            }
-        }
-}
+import server.util.extractSessionId
 
 // TODO Servers MUST validate the Origin header on all incoming connections to prevent DNS rebinding attacks
 // TODO Servers SHOULD implement proper authentication for all connections
 
 private typealias SessionId = String
+
+internal typealias RequestChannel = Channel<Request>
+
+private fun Channel.Factory.newRequestChannel(): RequestChannel = Channel(capacity = CONFLATED)
 
 // TODO ping/pong needed?
 internal class SseTransport(
@@ -77,7 +41,7 @@ internal class SseTransport(
     private val sessionMutex = Mutex()
     private val sessionStore: MutableMap<SessionId, RequestChannel> = mutableMapOf()
 
-    override suspend fun listen(handler: suspend (Request) -> Response) {
+    override suspend fun listen(handler: suspend (Request) -> Response?) {
         Logger.debug(TAG, "Starting SSE server on port: $port")
         // TODO move ktor logs to Logger
         embeddedServer(
@@ -109,6 +73,11 @@ internal class SseTransport(
                     requestChannel.send(request)
 
                     Logger.debug(TAG, "Received POST \"/message\" with: $request")
+
+                    call.respond(
+                        HttpStatusCode.OK,
+                        """{"jsonrpc":"2.0","id":"ack","result":"Message received"}"""
+                    )
                 }
 
                 // TODO clear session from store in case of an exception
@@ -147,6 +116,12 @@ internal class SseTransport(
                     for (request in requestsChannel) {
                         Logger.debug(TAG, "Received request from channel: $request")
                         val response = handler(request)
+
+                        if (response == null) {
+                            Logger.debug(TAG, "Skipping null response")
+                            continue
+                        }
+
                         Logger.debug(TAG, "Sending response : $response")
                         send(
                             ServerSentEvent(
@@ -162,16 +137,4 @@ internal class SseTransport(
             }
         }.startSuspend(wait = true)
     }
-
-    // TODO define rules for this
-    // TODO check if authorisation is provided client side or server side on initial request?
-    private fun ApplicationRequest.extractSessionId(): String? =
-        headers["Authorization"]
-            ?.substringAfter("Bearer ")
-            ?: queryParameters
-                .entries()
-                .firstOrNull()
-                ?.value
-                ?.firstOrNull()
-                ?.toString()
 }
