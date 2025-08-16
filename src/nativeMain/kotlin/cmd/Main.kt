@@ -19,6 +19,9 @@ import platform.posix.stderr
 import server.MCPServer
 import server.ServerConfig
 import server.tool.ExampleTool
+import server.tool.game.GetGameStateTool
+import server.tool.game.JoinGameTool
+import server.tool.game.MakeMoveTool
 
 private const val TAG = "Main"
 
@@ -36,6 +39,9 @@ public fun main(args: Array<String>) {
         port = config.ssePort,
         tools = listOf(
             ExampleTool,
+            JoinGameTool,
+            GetGameStateTool,
+            MakeMoveTool,
         )
     )
 

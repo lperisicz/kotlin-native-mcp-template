@@ -114,7 +114,10 @@ internal class MCPServer(
                 }
 
                 "tools/list" -> {
-                    Logger.info(TAG, "Handling tools list request")
+                    Logger.info(
+                        TAG,
+                        "Handling tools list request with: ${request.method} - ${request.params.toString()}"
+                    )
                     handleToolList(request)
                 }
 
