@@ -14,6 +14,7 @@ kotlinxCli = { module = "org.jetbrains.kotlinx:kotlinx-cli", version.ref = "kotl
 ktorServerCore = { module = "io.ktor:ktor-server-cio", version.ref = "ktorServer" }
 ktorServerCio = { module = "io.ktor:ktor-server-cio", version.ref = "ktorServer" }
 ktorServerSse = { module = "io.ktor:ktor-server-sse", version.ref = "ktorServer" }
+ktorServerCors = { module = "io.ktor:ktor-server-cors", version.ref = "ktorServer" }
 
 [plugins]
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }

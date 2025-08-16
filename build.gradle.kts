@@ -42,6 +42,7 @@ kotlin {
             implementation(libs.ktorServerCore)
             implementation(libs.ktorServerCio)
             implementation(libs.ktorServerSse)
+            implementation(libs.ktorServerCors)
         }
     }
 }
