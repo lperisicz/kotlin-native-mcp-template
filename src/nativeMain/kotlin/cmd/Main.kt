@@ -22,6 +22,7 @@ import server.tool.ExampleTool
 import server.tool.GetGameStateTool
 import server.tool.JoinGameTool
 import server.tool.MakeMoveTool
+import server.tool.ResetGameTool
 
 private const val TAG = "Main"
 
@@ -42,6 +43,7 @@ public fun main(args: Array<String>) {
             JoinGameTool,
             GetGameStateTool,
             MakeMoveTool,
+            ResetGameTool,
         )
     )
 

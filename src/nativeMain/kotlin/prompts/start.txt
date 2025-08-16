@@ -1,0 +1,1 @@
+Okayy lets create new game, call twice for players 1 and 2 to setup their x and  o symbols. Call only those tools once and let me play with each players seperatly, calling his make a move action once, then switching to second player.

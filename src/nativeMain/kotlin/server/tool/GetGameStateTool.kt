@@ -63,13 +63,13 @@ internal object GetGameStateTool : Tool {
         }
     }
 
-            private fun formatGameBoard(gameState: List<String>): String {
+                private fun formatGameBoard(gameState: List<String>): String {
         return """
- ${gameState[0].ifEmpty { "0" }} | ${gameState[1].ifEmpty { "1" }} | ${gameState[2].ifEmpty { "2" }}
+ ${gameState[0].ifEmpty { "0" }} | ${gameState[1].ifEmpty { "1" }} | ${gameState[2].ifEmpty { "2" }}    # Row 0: [0,0] [0,1] [0,2]
 -----------
- ${gameState[3].ifEmpty { "3" }} | ${gameState[4].ifEmpty { "4" }} | ${gameState[5].ifEmpty { "5" }}
+ ${gameState[3].ifEmpty { "3" }} | ${gameState[4].ifEmpty { "4" }} | ${gameState[5].ifEmpty { "5" }}    # Row 1: [1,0] [1,1] [1,2]
 -----------
- ${gameState[6].ifEmpty { "6" }} | ${gameState[7].ifEmpty { "7" }} | ${gameState[8].ifEmpty { "8" }}
+ ${gameState[6].ifEmpty { "6" }} | ${gameState[7].ifEmpty { "7" }} | ${gameState[8].ifEmpty { "8" }}    # Row 2: [2,0] [2,1] [2,2]
         """.trimIndent()
     }
 }
