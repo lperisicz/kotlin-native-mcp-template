@@ -42,6 +42,10 @@ kotlin {
             implementation(libs.ktorServerCore)
             implementation(libs.ktorServerCio)
             implementation(libs.ktorServerSse)
+            implementation(libs.ktorClientCore)
+            implementation(libs.ktorClientCio)
+            implementation(libs.ktorClientContentNegotiation)
+            implementation(libs.ktorSerializationKotlinxJson)
         }
     }
 }

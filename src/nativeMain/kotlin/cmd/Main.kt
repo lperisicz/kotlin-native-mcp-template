@@ -19,6 +19,7 @@ import platform.posix.stderr
 import server.MCPServer
 import server.ServerConfig
 import server.tool.ExampleTool
+import server.tool.RandomDogImageTool
 
 private const val TAG = "Main"
 
@@ -36,6 +37,7 @@ public fun main(args: Array<String>) {
         port = config.ssePort,
         tools = listOf(
             ExampleTool,
+            RandomDogImageTool,
         )
     )
 
