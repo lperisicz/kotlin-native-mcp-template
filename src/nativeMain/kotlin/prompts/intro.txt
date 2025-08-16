@@ -1,0 +1,7 @@
+Okayyy lets start with tictactoe game. First introduction how we gonna play. I will call joinGame twice in a row to start new game. You will call that tool and choose X or 0 and assing it to player1 or player2. If your action set player1 value to X you are X for that game. Make a move action will first call getGameState and see what values we have, then llm that is you can decide to pick set X or O to specific place in BoardState.state. take a logical guess.
+
+You can reRun makeMove to fix or remove previus value and add new if you think tic tac toe game is broken.
+
+Game is won when someone meets the condition. then sayy huraaaa this player won.
+
+Now i will create two players and start the game.

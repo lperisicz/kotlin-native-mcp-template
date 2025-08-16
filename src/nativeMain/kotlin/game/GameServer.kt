@@ -7,11 +7,7 @@ internal object GameServer {
 
     private val mutex = Mutex()
 
-    suspend fun joinGame(): String = mutex.withLock {
-        val player = GameState.availablePlayers.first()
-        GameState.availablePlayers = GameState.availablePlayers.drop(1)
-        return@withLock player
-    }
+        // Note: joinGame logic moved to JoinGameTool for better control
 
     suspend fun getState(): List<String> = mutex.withLock { GameState.state }
 
