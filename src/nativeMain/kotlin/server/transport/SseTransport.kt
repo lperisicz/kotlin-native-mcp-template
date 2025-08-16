@@ -1,12 +1,18 @@
 package server.transport
 
+import game.ApiGameState
+import game.GameState
+import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.install
 import io.ktor.server.cio.CIO
 import io.ktor.server.engine.embeddedServer
+import io.ktor.server.plugins.cors.routing.CORS
 import io.ktor.server.request.receiveText
 import io.ktor.server.request.uri
 import io.ktor.server.response.respond
+import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import io.ktor.server.routing.routing
 import io.ktor.server.sse.SSE
@@ -15,6 +21,7 @@ import io.ktor.sse.ServerSentEvent
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.serialization.json.Json
 import logger.Logger
 import logger.debug
 import server.util.extractSessionId
@@ -41,6 +48,8 @@ internal class SseTransport(
     private val sessionMutex = Mutex()
     private val sessionStore: MutableMap<SessionId, RequestChannel> = mutableMapOf()
 
+    private val json = Json { ignoreUnknownKeys = true }
+
     override suspend fun listen(handler: suspend (Request) -> Response?) {
         Logger.debug(TAG, "Starting SSE server on port: $port")
         // TODO move ktor logs to Logger
@@ -50,7 +59,20 @@ internal class SseTransport(
         ) {
             install(SSE)
 
+            install(CORS) {
+                anyHost()
+                allowHeader(HttpHeaders.ContentType)
+                allowMethod(HttpMethod.Get)
+            }
+
             routing {
+                get("/game-state") {
+                    call.respond(
+                        HttpStatusCode.OK,
+                        json.encodeToString(ApiGameState(GameState.state))
+                    )
+                }
+
                 post("/message") {
                     val request = call.receiveText()
 
