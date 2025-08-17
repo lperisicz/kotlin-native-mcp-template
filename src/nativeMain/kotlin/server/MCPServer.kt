@@ -39,6 +39,13 @@ internal class MCPServer(
         ServerConfig.Transport.STDIO -> StdioTransport()
         ServerConfig.Transport.SSE -> SseTransport(port = port)
     }
+    
+    fun shutdown() {
+        Logger.info(TAG, "Shutting down MCP server...")
+        if (transport is SseTransport) {
+            transport.shutdown()
+        }
+    }
 
     // TODO maybe there is a bug where crtl C not working? ctrl Z works, sometimes process still
     // exists because PORT already taken after restart
