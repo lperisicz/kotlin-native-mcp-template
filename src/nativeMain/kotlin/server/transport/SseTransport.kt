@@ -24,6 +24,7 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.json.Json
 import logger.Logger
 import logger.debug
+import logger.info
 import server.util.extractSessionId
 
 // TODO Servers MUST validate the Origin header on all incoming connections to prevent DNS rebinding attacks
@@ -78,6 +79,7 @@ internal class SseTransport(
 
                     // TODO provide error state to client
                     val sessionId = call.request.extractSessionId()
+                    Logger.info(TAG, "SessionId: $sessionId")
 
                     if (sessionId == null) {
                         Logger.debug(TAG, "No sessionId")
@@ -108,6 +110,7 @@ internal class SseTransport(
 
                     // TODO assuming first query parameter is the sessionIdwith
                     val sessionId = call.request.extractSessionId()
+                    Logger.info(TAG, "SessionId: $sessionId")
 
                     // TODO provide error state to client
                     if (sessionId == null) {

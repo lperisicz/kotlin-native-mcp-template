@@ -196,7 +196,7 @@ internal class MCPServer(
             json.decodeFromJsonElement<ToolCallParams>(it)
         } ?: return createErrorResponse(request.id, -32602, "Invalid params")
 
-        Logger.debug(TAG, "Calling tool: ${params.name}")
+        Logger.info(TAG, "Calling tool: ${params.name}")
 
         val targetTool = tools.firstOrNull { it.toolDefinition.name == params.name }
 

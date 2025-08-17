@@ -6,10 +6,12 @@ import kotlinx.coroutines.sync.withLock
 internal object GameServer {
 
     private val mutex = Mutex()
+    private var oToAssign = false
 
     suspend fun joinGame(): String = mutex.withLock {
-        val player = GameState.availablePlayers.first()
-        GameState.availablePlayers = GameState.availablePlayers.drop(1)
+        val index = 0.takeIf { oToAssign } ?: 1
+        oToAssign = oToAssign.not()
+        val player = GameState.availablePlayers[index]
         return@withLock player
     }
 

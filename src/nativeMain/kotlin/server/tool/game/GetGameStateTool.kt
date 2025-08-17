@@ -17,8 +17,9 @@ internal object GetGameStateTool : Tool {
 
     override val toolDefinition = Tool.ToolDefinition(
         name = "tictactoe_get_game_state",
-        description = "Get game state, returned as a String array of \"O\" or \"X\" inside the returned object under key: \"gameState\"" +
-                "Returned data should represent game state line by line",
+        description = "Get game state, returned as a String array of \"O\" or \"X\"." +
+                "Returned data should represent game state line by line. Starting from the top lefto" +
+                "to the last which is bottom right",
         inputSchema = buildJsonObject {
             put("type", "object")
             put("properties", buildJsonObject {})

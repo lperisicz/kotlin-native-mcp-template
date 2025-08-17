@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 
 internal object GameState {
 
-    internal var availablePlayers: List<String> = listOf("O", "X")
+    internal var availablePlayers: List<String> = listOf("X", "O")
     internal var state = listOf(
         "", "", "",
         "", "", "",
