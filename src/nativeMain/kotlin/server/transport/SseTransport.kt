@@ -13,11 +13,13 @@ import io.ktor.server.sse.SSE
 import io.ktor.server.sse.sse
 import io.ktor.sse.ServerSentEvent
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import logger.Logger
 import logger.debug
 import server.util.extractSessionId
+import kotlin.coroutines.resume
 
 // TODO Servers MUST validate the Origin header on all incoming connections to prevent DNS rebinding attacks
 // TODO Servers SHOULD implement proper authentication for all connections
@@ -41,9 +43,23 @@ internal class SseTransport(
     private val sessionMutex = Mutex()
     private val sessionStore: MutableMap<SessionId, RequestChannel> = mutableMapOf()
 
-    override suspend fun listen(handler: suspend (Request) -> Response?) {
-        Logger.debug(TAG, "Starting SSE server on port: $port")
-        // TODO move ktor logs to Logger
+    override suspend fun listen(handler: suspend (Request) -> Response?): Unit =
+        suspendCancellableCoroutine { continuation ->
+            Logger.debug(TAG, "Starting SSE server on port: $port")
+            // TODO move ktor logs to Logger
+            val server = createServer(handler)
+
+            continuation.invokeOnCancellation { cause: Throwable? ->
+                Logger.debug(TAG, "Stopping SSE transport due to cancellation: ${cause?.message}")
+
+                server.stop(gracePeriodMillis = 1000, timeoutMillis = 3000)
+                continuation.resume(Unit)
+            }
+
+            server.start(wait = true)
+        }
+
+    private fun createServer(handler: suspend (Request) -> Response?) =
         embeddedServer(
             factory = CIO,
             port = port,
@@ -135,6 +151,5 @@ internal class SseTransport(
                     Logger.debug(TAG, "Closing connection on \"/sse\"")
                 }
             }
-        }.startSuspend(wait = true)
-    }
+        }
 }
