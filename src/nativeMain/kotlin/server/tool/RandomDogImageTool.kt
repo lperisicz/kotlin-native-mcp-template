@@ -2,7 +2,7 @@ package server.tool
 
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
-import io.ktor.client.engine.cio.CIO
+import io.ktor.client.engine.curl.Curl
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.get
 import io.ktor.serialization.kotlinx.json.json
@@ -29,7 +29,7 @@ internal object RandomDogImageTool : Tool {
     private const val TAG = "RandomDogImageTool"
     private const val DOG_API_URL = "https://dog.ceo/api/breeds/image/random"
 
-    private val httpClient = HttpClient(CIO) {
+    private val httpClient = HttpClient(Curl) {
         install(ContentNegotiation) {
             json(Json {
                 ignoreUnknownKeys = true
@@ -52,7 +52,7 @@ internal object RandomDogImageTool : Tool {
 
         return try {
             val response = httpClient.get(DOG_API_URL).body<DogApiResponse>()
-            
+
             if (response.status == "success") {
                 val content = listOf(
                     ToolContent(

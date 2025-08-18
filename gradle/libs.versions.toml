@@ -15,7 +15,7 @@ ktorServerCore = { module = "io.ktor:ktor-server-cio", version.ref = "ktorServer
 ktorServerCio = { module = "io.ktor:ktor-server-cio", version.ref = "ktorServer" }
 ktorServerSse = { module = "io.ktor:ktor-server-sse", version.ref = "ktorServer" }
 ktorClientCore = { module = "io.ktor:ktor-client-core", version.ref = "ktorServer" }
-ktorClientCio = { module = "io.ktor:ktor-client-cio", version.ref = "ktorServer" }
+ktorClientCurl = { module = "io.ktor:ktor-client-curl", version.ref = "ktorServer" }
 ktorClientContentNegotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktorServer" }
 ktorSerializationKotlinxJson = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktorServer" }
 

@@ -43,7 +43,7 @@ kotlin {
             implementation(libs.ktorServerCio)
             implementation(libs.ktorServerSse)
             implementation(libs.ktorClientCore)
-            implementation(libs.ktorClientCio)
+            implementation(libs.ktorClientCurl)
             implementation(libs.ktorClientContentNegotiation)
             implementation(libs.ktorSerializationKotlinxJson)
         }
